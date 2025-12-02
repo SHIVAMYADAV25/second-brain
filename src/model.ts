@@ -1,6 +1,12 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, {Schema, Types} from "mongoose";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
+
+const contentType =  [
+    "youtube","X","PDF","website","github","linkedln","google docs"
+]
+
+
 
 const userSchema = new mongoose.Schema({
     username : {
@@ -17,8 +23,31 @@ const userSchema = new mongoose.Schema({
     }
 })
 
-
-
+const contentSchema = new mongoose.Schema({
+    link: {
+        type:String,
+        required: true
+    },
+    type : {
+        type:String,
+        enum : contentType,
+        required: true,
+        lowercase : true
+    },
+    title: {
+        type:String,
+        required : true
+    },
+    tags : [{
+        type:Types.ObjectId, ref:"Tag"
+    }],
+    userId: {
+            type:Types.ObjectId,
+            ref:"User",
+            required : true
+    }
+})
 
 
 export const User = mongoose.model("User",userSchema);
+export const Content = mongoose.model("Content",contentSchema);
