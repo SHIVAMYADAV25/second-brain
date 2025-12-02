@@ -1,8 +1,9 @@
 // src/server.ts
 import express from 'express';
 import { connectDB } from './db.js';
-import { User } from './model.js';
+import { User ,Content} from './model.js';
 import jwt from "jsonwebtoken"
+import { userMiddleware } from './middleware.js';
 
 const app = express();
 const port = 3000;
@@ -78,25 +79,39 @@ app.post('/api/v1/signin',async (req, res) => {
     }
 });
 
-app.post('/api/v1/content', (req, res) => {
+app.post('/api/v1/content', userMiddleware,async (req, res) => {
     // connect middleware
     //take data
     // save in mongo db
     // send response
+    const {link , type,title} = req.body
+
+    const content = await Content.create({
+        link,
+        type,
+        title,
+        userId:  req.userId,
+        tags : []
+    })
+
+    res.json({
+        message : "content created"
+    })
+
 });
 
-app.get('/api/v1/content', (req, res) => {
+app.get('/api/v1/content', userMiddleware,(req, res) => {
     //get all the data of that user 
     // and the user ID will be in middleware
 });
 
-app.delete("/api/v1/content",(res,req) => {
+app.delete("/api/v1/content",userMiddleware, (res,req) => {
     // get the content ID of that content
     // delete that data and send delete response
 })
 
-app.post("/api/v1/share",(res,req) => {
-    
+app.post("/api/v1/share",userMiddleware,(res,req) => {
+
 })
 
 app.get("/api/v1/share/:shareLink",(res,req) => {

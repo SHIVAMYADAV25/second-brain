@@ -6,8 +6,6 @@ const contentType =  [
     "youtube","x","pdf","website","github","linkedln","google docs"
 ]
 
-
-
 const userSchema = new mongoose.Schema({
     username : {
         type:String,
