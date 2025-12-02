@@ -79,19 +79,24 @@ app.post('/api/v1/signin',async (req, res) => {
 });
 
 app.post('/api/v1/content', (req, res) => {
-    
+    // connect middleware
+    //take data
+    // save in mongo db
+    // send response
 });
 
 app.get('/api/v1/content', (req, res) => {
-
+    //get all the data of that user 
+    // and the user ID will be in middleware
 });
 
 app.delete("/api/v1/content",(res,req) => {
-
+    // get the content ID of that content
+    // delete that data and send delete response
 })
 
 app.post("/api/v1/share",(res,req) => {
-
+    
 })
 
 app.get("/api/v1/share/:shareLink",(res,req) => {

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
 const contentType =  [
-    "youtube","X","PDF","website","github","linkedln","google docs"
+    "youtube","x","pdf","website","github","linkedln","google docs"
 ]
 
 
