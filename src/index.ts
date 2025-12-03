@@ -127,10 +127,33 @@ app.get('/api/v1/content', userMiddleware,async (req, res) => {
 
 });
 
-app.delete("/api/v1/content",userMiddleware, (res,req) => {
+app.delete("/api/v1/content",userMiddleware, async (req,res) => {
     // get the content ID of that content
     // delete that data and send delete response
-    
+    const { contentId } = req.body;
+
+    if(!contentId){
+        return res.status(400).json({
+        message:"please give the content ID"
+    })
+    }
+
+    const deletedData = await Content.deleteOne({
+        _id : contentId,      // <-- FIX HERE
+        // @ts-ignore
+        userId : req.userId // <-- ensures users delete only their own content
+    })
+
+    if(deletedData.deletedCount === 0){
+        return res.status(403).json({
+      message: "Trying to delete a doc you don't own or doc doesn't exist",
+    });
+    }
+
+
+    res.status(200).json({
+        message: "Content deleted successfully"
+    })
 })
 
 app.post("/api/v1/share",userMiddleware,(res,req) => {
