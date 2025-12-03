@@ -1,7 +1,8 @@
 // src/server.ts
 import express from 'express';
 import { connectDB } from './db.js';
-import { User ,Content} from './model.js';
+import { User ,Content,Link} from './model.js';
+import { random }  from "./utilites.js";
 import jwt from "jsonwebtoken"
 import { userMiddleware } from './middleware.js';
 
@@ -156,11 +157,91 @@ app.delete("/api/v1/content",userMiddleware, async (req,res) => {
     })
 })
 
-app.post("/api/v1/share",userMiddleware,(res,req) => {
+app.post("/api/v1/share",userMiddleware,async (req,res) => {
 
+    // the share will be true or false
+    // of true then get the userId from middleware
+    // create link from random store it with userId
+    // if already made then return it by default
+    // if the share id false then the link will be deleted
+
+    const share = req.body.share;
+    // @ts-ignore
+    const userId = req.userId
+    if(share){
+        const existingLink = await Link.findOne({
+            userId : userId
+        });
+
+        if(existingLink){
+            return res.status(201).json({
+                hash  : existingLink.hash
+            })
+        }
+
+        const hash = random(10);
+        await Link.create({
+            hash:hash,
+            userId : userId
+        })
+
+        res.status(200).json({
+            hash
+        })
+    }else{
+        await Link.deleteOne({
+            userId
+        });
+
+        res.status(205).json({
+            message : "Link Removed"
+        })
+    }
 })
 
-app.get("/api/v1/share/:shareLink",(res,req) => {
+app.get("/api/v1/share/:shareLink",async (req,res) => {
+    // get the has linked from parames
+    // find hash in link model
+    // after that get the content from the userId store in link model
+    // same with username 
+    // return username and content data
+
+    const sharedLink = req.params.shareLink;
+
+    if(!sharedLink){
+        return res.status(301).json({
+            message:"didn't give the shareLink"
+        })
+    }
+
+    const link = await Link.findOne({
+        hash : sharedLink
+    })
+
+    if(!link){
+        return res.status(304).json({
+            message:"didn't get the link from model"
+        })
+    }
+
+    const content = await Content.find({
+        userId : link.userId
+    })
+
+    const user = await User.findOne({
+        _id : link.userId
+    })
+
+    if(!content && !user){
+        return res.status(401).json({
+            message:"didn't get the content or user"
+        })
+    }
+
+    res.status(200).json({
+        content,
+        user : user?.username
+    })
 
 })
 
