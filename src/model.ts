@@ -56,6 +56,10 @@ const linkSchema = new mongoose.Schema({
         type:mongoose.Types.ObjectId,
         ref : "User",
         required : true
+    },
+    contentId : {
+        type:mongoose.Types.ObjectId,
+        requied :true
     }
 }) 
 

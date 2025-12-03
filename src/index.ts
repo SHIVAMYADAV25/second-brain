@@ -166,11 +166,14 @@ app.post("/api/v1/share",userMiddleware,async (req,res) => {
     // if the share id false then the link will be deleted
 
     const share = req.body.share;
+    const contentId = req.body.contentId;
     // @ts-ignore
     const userId = req.userId
+    // console.log(share)
     if(share){
         const existingLink = await Link.findOne({
-            userId : userId
+            userId : userId,
+            contentId : contentId
         });
 
         if(existingLink){
@@ -182,24 +185,26 @@ app.post("/api/v1/share",userMiddleware,async (req,res) => {
         const hash = random(10);
         await Link.create({
             hash:hash,
-            userId : userId
+            userId : userId,
+            contentId : contentId 
         })
 
         res.status(200).json({
             hash
         })
     }else{
+        // console.log("working")
         await Link.deleteOne({
             userId
         });
 
-        res.status(205).json({
+        res.status(201).json({
             message : "Link Removed"
         })
     }
 })
 
-app.get("/api/v1/share/:shareLink",async (req,res) => {
+app.get("/api/v1/share/:shareLink",userMiddleware,async (req,res) => {
     // get the has linked from parames
     // find hash in link model
     // after that get the content from the userId store in link model
@@ -225,7 +230,7 @@ app.get("/api/v1/share/:shareLink",async (req,res) => {
     }
 
     const content = await Content.find({
-        userId : link.userId
+        _id : link.contentId
     })
 
     const user = await User.findOne({
