@@ -84,12 +84,13 @@ app.post('/api/v1/content', userMiddleware,async (req, res) => {
     //take data
     // save in mongo db
     // send response
-    const {link , type,title} = req.body
+    const {link,type,title} = req.body
 
     const content = await Content.create({
         link,
         type,
         title,
+        // @ts-ignore
         userId:  req.userId,
         tags : []
     })
@@ -100,14 +101,36 @@ app.post('/api/v1/content', userMiddleware,async (req, res) => {
 
 });
 
-app.get('/api/v1/content', userMiddleware,(req, res) => {
+app.get('/api/v1/content', userMiddleware,async (req, res) => {
     //get all the data of that user 
     // and the user ID will be in middleware
+    // @ts-ignore
+    let userId = req.userId
+
+    const contentData = await Content.find({
+        userId:userId
+    }).populate("userId","username") //agar kisi mai kisi data ka id raha ta hai to uska pura data show lar sakte hai using populate
+    // aur agar uska baad kuch bhi lekha to vahi data show hoga 
+    // like uerId mai user ka ID hai aur usmai userdata hai agar uske baat username lekha to user ka kaam dekha ga
+    // aur agar password lekha to user ka password dekhe ga
+
+    if(!contentData){
+        res.status(400).json({
+        message : "error fetching data"
+    })
+    }
+
+    res.status(200).json({
+        contentData
+    })
+
+
 });
 
 app.delete("/api/v1/content",userMiddleware, (res,req) => {
     // get the content ID of that content
     // delete that data and send delete response
+    
 })
 
 app.post("/api/v1/share",userMiddleware,(res,req) => {
