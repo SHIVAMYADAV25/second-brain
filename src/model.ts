@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"
 
 const contentType =  [
-    "youtube","x","pdf","website","github","linkedln","google docs"
+    "youtube","tweet","pdf","website","github","linkedln","google docs"
 ]
 
 const userSchema = new mongoose.Schema({

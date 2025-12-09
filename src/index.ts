@@ -4,12 +4,14 @@ import { connectDB } from './db.js';
 import { User ,Content,Link} from './model.js';
 import { random }  from "./utilites.js";
 import jwt from "jsonwebtoken"
+import cors from "cors"
 import { userMiddleware } from './middleware.js';
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 app.post('/api/v1/signup',async (req, res) => {
     let username = req.body.username;
